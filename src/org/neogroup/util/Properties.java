@@ -1,19 +1,21 @@
 
 package org.neogroup.util;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class Properties extends java.util.Properties {
 
-    public void loadResource (String resourceName) throws IOException {
-        
-        InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName);
-        try {
+    public void loadFromResource (String resourceName) throws IOException {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             load(in);
         }
-        finally {
-            in.close();
+    }
+
+    public void loadFromFile (String filename) throws IOException {
+        try (FileInputStream in = new FileInputStream(filename)) {
+            load(in);
         }
     }
 
