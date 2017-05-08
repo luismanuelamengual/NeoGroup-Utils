@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class MimeTypes {
+public abstract class MimeUtils {
 
     private static final String FILE_EXTENSION_REGEX = "\\.(?=[^\\.]+$)";
 
@@ -1179,7 +1179,7 @@ public abstract class MimeTypes {
 
     public static String getMimeType (String filename) {
         String[] nameExtension = filename.split(FILE_EXTENSION_REGEX);
-        String extension = nameExtension.length == 2 ? nameExtension[1] : MimeTypes.BIN;
+        String extension = nameExtension.length == 2 ? nameExtension[1] : MimeUtils.BIN;
         String mimeType =  mimeTypes.get(extension);
         if (mimeType == null) {
             mimeType = TEXT_PLAIN;
