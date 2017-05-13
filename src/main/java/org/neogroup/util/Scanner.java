@@ -10,17 +10,28 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * Class scanner to find clases with certain filters
+ */
 public class Scanner {
 
     private static final String CLASS_EXTENSION = ".class";
 
     private Set<URI> classPaths;
 
+    /**
+     * Constructor of the scanner
+     * Adds the classloader classpath by default
+     */
     public Scanner() {
         classPaths = new HashSet<>();
         addClassPaths(getClass().getClassLoader());
     }
 
+    /**
+     * Adds a new classLoader for finding classes
+     * @param classLoader Classloader to be loaded
+     */
     public void addClassPaths (ClassLoader classLoader) {
         try {
             Enumeration<URL> roots = classLoader.getResources("");
@@ -32,10 +43,18 @@ public class Scanner {
         catch (Exception ex) {}
     }
 
+    /**
+     * Add a classpath by an uri
+     * @param classPath uri classpath to be added
+     */
     public void addClassPath (URI classPath) {
         classPaths.add(classPath);
     }
 
+    /**
+     * Find classes in the given claspaths
+     * @return Classes retrieved
+     */
     public Set<Class> findClasses () {
         return findClasses(new ClassFilter() {
             @Override
@@ -45,6 +64,11 @@ public class Scanner {
         });
     }
 
+    /**
+     * Find clases with the given class filter
+     * @param classFilter Filter for the classes
+     * @return Classes retrieved
+     */
     public Set<Class> findClasses (ClassFilter classFilter) {
 
         Set<Class> classes = new HashSet<>();
@@ -79,6 +103,13 @@ public class Scanner {
         return classes;
     }
 
+    /**
+     * Find clases
+     * @param classes
+     * @param file
+     * @param baseName
+     * @param classFilter
+     */
     private void findClasses (Set<Class> classes, File file, String baseName, ClassFilter classFilter) {
 
         if(file.isDirectory()){

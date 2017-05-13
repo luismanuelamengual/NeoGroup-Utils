@@ -5,6 +5,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utilities for mime types
+ */
 public abstract class MimeUtils {
 
     private static final String FILE_EXTENSION_REGEX = "\\.(?=[^\\.]+$)";
@@ -1173,10 +1176,20 @@ public abstract class MimeUtils {
         mimeTypes.put(ZSH, TEXT_X_SCRIPT_ZSH);
     }
 
+    /**
+     * Get the mime type for a given File
+     * @param file File to obtain the mime type
+     * @return
+     */
     public static String getMimeType (File file) {
         return getMimeType(file.getName());
     }
 
+    /**
+     * Get the mime type for a given filename
+     * @param filename Filename to obtain the mime type
+     * @return
+     */
     public static String getMimeType (String filename) {
         String[] nameExtension = filename.split(FILE_EXTENSION_REGEX);
         String extension = nameExtension.length == 2 ? nameExtension[1] : MimeUtils.BIN;
