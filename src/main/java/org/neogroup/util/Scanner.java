@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 
 /**
  * Class scanner to find clases with certain filters
@@ -25,7 +26,7 @@ public class Scanner {
      */
     public Scanner() {
         classPaths = new HashSet<>();
-        addClassPaths(getClass().getClassLoader());
+        addClassPaths(Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -56,12 +57,7 @@ public class Scanner {
      * @return Classes retrieved
      */
     public Set<Class> findClasses () {
-        return findClasses(new ClassFilter() {
-            @Override
-            public boolean accept(Class clazz) {
-                return true;
-            }
-        });
+        return findClasses((Class clazz) -> { return true; });
     }
 
     /**
@@ -80,27 +76,46 @@ public class Scanner {
             else {
                 try {
                     JarFile jar = new JarFile(resource);
-                    Enumeration en = jar.entries();
+                    Enumeration<JarEntry> en = jar.entries();
                     while (en.hasMoreElements()) {
-                        JarEntry entry = (JarEntry) en.nextElement();
-                        String entryName = entry.getName();
-
-                        if (entryName.endsWith(CLASS_EXTENSION)) {
-                            String className = entryName.substring(0, entryName.indexOf("."));
-                            className = className.replace('/', '.');
-                            Class clazz = getClass(className);
-                            if (clazz != null) {
-                                if (classFilter.accept(clazz)) {
-                                    classes.add(clazz);
-                                }
-                            }
-                        }
+                        JarEntry entry = en.nextElement();
+                        findJarClasses(classes, jar, entry, "", classFilter);
                     }
                 }
                 catch (Exception ex) {}
             }
         }
         return classes;
+    }
+
+    /**
+     * Find jar classes in a jar
+     * @param classes Classes being collected
+     * @param jf jar file
+     * @param entry jar entry
+     * @param baseName base class name
+     * @param classFilter class filter
+     * @throws Exception
+     */
+    private void findJarClasses (Set<Class> classes, JarFile jf, JarEntry entry, String baseName, ClassFilter classFilter) throws Exception {
+
+        String entryName = entry.getName();
+        if (entry.isDirectory()) {
+            try (JarInputStream jis = new JarInputStream(jf.getInputStream(entry))){
+                findJarClasses(classes, jf, jis.getNextJarEntry(), baseName + "." + entryName, classFilter);
+            }
+        }
+        else {
+            if (entryName.endsWith(CLASS_EXTENSION)) {
+                String className = baseName.substring(0, baseName.length() - CLASS_EXTENSION.length());
+                Class clazz = getClass(className);
+                if (clazz != null) {
+                    if (classFilter.accept(clazz)) {
+                        classes.add(clazz);
+                    }
+                }
+            }
+        }
     }
 
     /**
