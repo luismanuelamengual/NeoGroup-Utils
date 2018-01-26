@@ -12,7 +12,7 @@
 
     <groupId>com.github.luismanuelamengual</groupId>
     <artifactId>NeoGroup-Utils</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
     <name>NeoGroup-Utils</name>
     <description>General Utilities</description>

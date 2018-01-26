@@ -26,7 +26,7 @@ public class Scanner {
      */
     public Scanner() {
         classPaths = new HashSet<>();
-        addClassPaths(Thread.currentThread().getContextClassLoader());
+        addClassPaths(Scanner.class.getClassLoader());
     }
 
     /**
